@@ -26,7 +26,7 @@ def detect():
     source, weights, imgsz = SOURCE, WEIGHTS, IMG_SIZE
 
     # Initialize
-    device = select_device('cpu')
+    device = select_device('cpu') # 일단 CPU defalut로
     # device = select_device(DEVICE)
     half = device.type != 'cpu'  # half precision only supported on CUDA
     print('device:', device)
@@ -104,7 +104,7 @@ def detect():
     # Stream results
     print(s)
     cv2.imshow(source, img0)
-    cv2.waitKey(0)  # 1 millisecond
+    cv2.waitKey(0)  # 1 millisecond 
 
 
 if __name__ == '__main__':
