@@ -4,7 +4,7 @@
 1. **_Clone the repository_**
 
 ```sh
-$ git clone https://github.com/
+$ git clone https://github.com/https://github.com/GC-Graduation-Project/Recognize.git
 ```
 2. **_Navigate to repository directory_**
 ```sh
