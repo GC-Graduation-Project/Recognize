@@ -3,6 +3,32 @@ import cv2
 import numpy as np
 import functions as fs
 
+
+def deskew(image): # 이미지 보정 함수 작성 완료.
+    src=image.copy()
+    gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+    length = src.shape[1]
+    canny = cv2.Canny(gray, 5000, 1500, apertureSize=5, L2gradient=True)
+    lines = cv2.HoughLinesP(canny, 0.9, np.pi / 180, 90, minLineLength=length * 0.70,
+                            maxLineGap=100)  # 우리가 탐색할 선은 오선이므로 이미지의 70%이상인 선을 가지고 있으면 오선으로 간주
+
+    # 모든 선의 기울기를 계산하고 평균을 구합니다.
+    angles = []
+    for line in lines:
+        line = line[0]
+        angle = np.arctan2(line[3] - line[1], line[2] - line[0]) * 180. / np.pi
+        if (angle >= 0):  # 직선 무시 일반적인 악보는 기울기가 0.0이기때문
+            angles.append(angle)
+    avg_angle = np.mean(angles)
+
+    # 이미지의 중심을 기준으로 회전 변환 행렬을 계산합니다.
+    h, w = src.shape[:2]
+    center = (w / 2, h / 2)
+    M = cv2.getRotationMatrix2D(center, avg_angle, 1)
+    rotated = cv2.warpAffine(src, M, (w, h), borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))
+    output = cv2.fastNlMeansDenoising(rotated, None, 10, 7, 21)
+    return output
+
 def remove_noise(image):
     image = fs.threshold(image)  # 이미지 이진화
     mask = np.zeros(image.shape, np.uint8)  # 보표 영역만 추출하기 위해 마스크 생성
@@ -22,6 +48,7 @@ def remove_noise(image):
     return masked_image, subimages
 
 def camera_remove_noise(image):
+    image = fs.camera_threshold(image) # 이미지 이진화
     mask = np.zeros(image.shape, np.uint8)  # 보표 영역만 추출하기 위해 마스크 생성
     subimages = []  # subimage들을 저장할 리스트
     cnt, labels, stats, centroids = cv2.connectedComponentsWithStats(image)  # 레이블링
@@ -38,6 +65,7 @@ def camera_remove_noise(image):
 
     return masked_image, subimages
 
+
 def remove_staves(image):
     height, width = image.shape
     staves = []  # 오선의 좌표들이 저장될 리스트
@@ -46,7 +74,7 @@ def remove_staves(image):
         pixels = 0
         for col in range(width):
             pixels += (image[row][col] == 255)  # 한 행에 존재하는 흰색 픽셀의 개수를 셈
-        if pixels >= width * 0.5:  # 이미지 넓이의 50% 이상이라면
+        if pixels >= width * 0.4:  # 이미지 넓이의 50% 이상이라면
             if len(staves) == 0 or abs(staves[-1][0] + staves[-1][1] - row) > 1:  # 첫 오선이거나 이전에 검출된 오선과 다른 오선
                 staves.append([row, 0])  # 오선 추가 [오선의 y 좌표][오선 높이]
             else:  # 이전에 검출된 오선과 같은 오선
