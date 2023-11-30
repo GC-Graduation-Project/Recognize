@@ -1,8 +1,6 @@
 import os
-import time
 import cv2
 import torch
-import torch.backends.cudnn as cudnn
 import numpy as np
 
 from numpy import random
@@ -13,22 +11,25 @@ from utils.plots import plot_one_box
 from utils.torch_utils import select_device
 
 
-SOURCE = 'image3.png'
+SOURCE = 'image2.png'
 WEIGHTS = os.getcwd() + "/models/" + 'best.pt'
 IMG_SIZE = 640
 DEVICE = ''
 AUGMENT = False
-CONF_THRES = 0.7
+CONF_THRES = 0.6
 IOU_THRES = 0.45
 CLASSES = None
 AGNOSTIC_NMS = False
 
+# stave_list가 들어올 경우 result_list에서
 
-def detect():
+def detect(image, stave_list):
     source, weights, imgsz = SOURCE, WEIGHTS, IMG_SIZE
-
+    # source=image
+    result_list=[] # 인식 결과를 담은 list 생성
     # Initialize
-    device = select_device(DEVICE)
+    device = select_device('cpu') # 일단 CPU defalut로
+    # device = select_device(DEVICE)
     half = device.type != 'cpu'  # half precision only supported on CUDA
     print('device:', device)
 
@@ -88,17 +89,25 @@ def detect():
             s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
         # Write results
-        for *xyxy, conf, cls in reversed(det):
+        sorted_det = sorted(det, key=lambda x: (x[0] + x[2]) / 2)  # x 중점을 기준으로 정렬
+
+        for *xyxy, conf, cls in sorted_det:
             label = f'{names[int(cls)]} {conf:.2f}'
             plot_one_box(xyxy, img0, label=label, color=colors[int(cls)], line_thickness=3)
 
+            # 추가: bounding box의 중점 좌표와 확률(label 이름 포함) 출력
+            x_center = (xyxy[0] + xyxy[2]) / 2
+            y_center = (xyxy[1] + xyxy[3]) / 2
+            x_center, y_center = round(float(x_center), 2), round(float(y_center), 2)  # 텐서를 숫자로 변환 및 라운딩
+            print(f'Box Center: ({x_center}, {y_center}), Confidence: {conf:.2f}, Class: {names[int(cls)]}') # 인식 결과를 x 좌표 순서대로 정렬
+            result_list.append([y_center, names[int(cls)]])
+
         print(f'Inferencing and Processing Done.')
 
+    print(result_list)
     # Stream results
     print(s)
-    cv2.imshow(source, img0)
-    cv2.waitKey(0)  # 1 millisecond
-
+    return result_list
 
 if __name__ == '__main__':
     check_requirements(exclude=('pycocotools', 'thop'))
