@@ -1,8 +1,6 @@
 import os
-import time
 import cv2
 import torch
-import torch.backends.cudnn as cudnn
 import numpy as np
 
 from numpy import random
@@ -13,12 +11,12 @@ from utils.plots import plot_one_box
 from utils.torch_utils import select_device
 
 
-SOURCE = 'image3.png'
+SOURCE = 'image2.png'
 WEIGHTS = os.getcwd() + "/models/" + 'best.pt'
 IMG_SIZE = 640
 DEVICE = ''
 AUGMENT = False
-CONF_THRES = 0.7
+CONF_THRES = 0.6
 IOU_THRES = 0.45
 CLASSES = None
 AGNOSTIC_NMS = False
@@ -28,7 +26,8 @@ def detect():
     source, weights, imgsz = SOURCE, WEIGHTS, IMG_SIZE
 
     # Initialize
-    device = select_device(DEVICE)
+    device = select_device('cpu')
+    # device = select_device(DEVICE)
     half = device.type != 'cpu'  # half precision only supported on CUDA
     print('device:', device)
 
@@ -88,9 +87,17 @@ def detect():
             s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
         # Write results
-        for *xyxy, conf, cls in reversed(det):
+        sorted_det = sorted(det, key=lambda x: (x[0] + x[2]) / 2)  # x 중점을 기준으로 정렬
+
+        for *xyxy, conf, cls in sorted_det:
             label = f'{names[int(cls)]} {conf:.2f}'
             plot_one_box(xyxy, img0, label=label, color=colors[int(cls)], line_thickness=3)
+
+            # 추가: bounding box의 중점 좌표와 확률(label 이름 포함) 출력
+            x_center = (xyxy[0] + xyxy[2]) / 2
+            y_center = (xyxy[1] + xyxy[3]) / 2
+            x_center, y_center = round(float(x_center), 2), round(float(y_center), 2)  # 텐서를 숫자로 변환 및 라운딩
+            print(f'Box Center: ({x_center}, {y_center}), Confidence: {conf:.2f}, Class: {names[int(cls)]}')
 
         print(f'Inferencing and Processing Done.')
 
