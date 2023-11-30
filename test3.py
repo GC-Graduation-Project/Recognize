@@ -7,32 +7,37 @@ import modules
 
 # 이미지를 읽어옵니다.
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path+"rotate.jpg")
-dst = src.copy()
-gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
-length = src.shape[1]
-canny = cv2.Canny(gray, 5000, 1500, apertureSize = 5, L2gradient = True)
-lines = cv2.HoughLinesP(canny, 0.9, np.pi / 180, 90, minLineLength = length*0.70, maxLineGap = 100) # 우리가 탐색할 선은 오선이므로 이미지의 70%이상인 선을 가지고 있으면 오선으로 간주
+src = cv2.imread(resource_path+"music5.jpg")
 
-# 모든 선의 기울기를 계산하고 평균을 구합니다.
-angles = []
-for line in lines:
-    line = line[0]
-    angle = np.arctan2(line[3] - line[1], line[2] - line[0]) * 180. / np.pi
-    if(angle>=0): # 직선 무시 일반적인 악보는 기울기가 0.0이기때문
-        angles.append(angle)
-avg_angle = np.mean(angles)
+image = modules.deskew(src)
+image_0, subimages = modules.camera_remove_noise(image)
+image_1= fs.camera_threshold(image)
 
-# 이미지의 중심을 기준으로 회전 변환 행렬을 계산합니다.
-h, w = src.shape[:2]
-center = (w / 2, h / 2)
-M = cv2.getRotationMatrix2D(center, avg_angle, 1)
-rotated = cv2.warpAffine(src, M, (w, h), borderMode=cv2.BORDER_CONSTANT, borderValue=(255,255,255))
-output = cv2.fastNlMeansDenoising(rotated, None, 10, 7, 21)
-image_0 = fs.camera_threshold(output)
+# 글자나 다른 노이즈를 제거하기위해서 썼는데 잘 안되네
+
+# min_area_threshold = image_1.shape[1]*0.5
+# mask = np.zeros(image_1.shape, np.uint8)  # 보표 영역만 추출하기 위해 마스크 생성
+# cnt, labels, stats, centroids = cv2.connectedComponentsWithStats(image_1)  # 레이블링
+# for i in range(1, cnt):
+#     x, y, w, h, area = stats[i]
+#     if w > image_1.shape[1] * 0.5 and area > min_area_threshold:  # 보표 영역에만
+#         cv2.rectangle(mask, (x, y, w, h), (255, 0, 0), -1)  # 사각형 그리기
+#
+# masked_image = cv2.bitwise_and(image_1, mask)  # 보표 영역 추출
+#
+# # 작은 객체를 제거하기 위한 마스크 생성
+# small_objects_mask = np.zeros(image_1.shape, np.uint8)
+#
+# cnt, labels, stats, centroids = cv2.connectedComponentsWithStats(masked_image)  # 레이블링
+# for i in range(1, cnt):
+#     x, y, w, h, area = stats[i]
+#     if h < 12:
+#         cv2.rectangle(small_objects_mask, (x, y, w, h), (255, 0, 0), -1)  # 사각형 그리기
+#
+# masked_image = cv2.bitwise_and(masked_image, small_objects_mask)  # 보표 영역 추출
 
 
 # 결과를 출력합니다.
-cv2.imshow('result', image_0)
+cv2.imshow('result', masked_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
