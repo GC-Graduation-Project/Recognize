@@ -65,8 +65,6 @@ def remove_noise(image):
                 else:  # 이전에 검출된 오선과 같은 오선
                     staves[-1][1] += 1  # 높이 업데이트
 
-        print(len(staves))
-
         if (len(staves) > 5):  # 악보 오선이 5개 이상 (큰 보표면)
             # 이미지를 수평으로 반으로 나누기
             half_height = int((staves[4][0]+staves[5][0])/2)
@@ -85,7 +83,7 @@ def camera_remove_noise(image):
     cnt, labels, stats, centroids = cv2.connectedComponentsWithStats(image)  # 레이블링
     for i in range(1, cnt):
         x, y, w, h, area = stats[i]
-        if w > image.shape[1] * 0.7:  # 보표 영역에만
+        if w > image.shape[1] * 0.5:  # 보표 영역에만
             cv2.rectangle(mask, (x, y, w, h), (255, 0, 0), -1)  # 사각형 그리기
 
             # 원본 이미지에서 사각형 영역 추출하여 subimages 리스트에 추가
@@ -172,3 +170,28 @@ def normalization(image, staves, standard):
     staves = [x * weight for x in staves]  # 오선 좌표에도 가중치를 곱해줌
 
     return image, staves
+
+def digital_preprocessing(image, subimage_array):
+    image_0 = image.copy()
+    stave_list = []
+    normalized_images = []
+    for subimage_coords in subimage_array:
+        x, y, w, h = subimage_coords
+        subimage = image_0[y:y + h + 5, x:x + w]
+        normalized_image, stave_info = remove_staves(subimage)  # 오선 제거
+        normalized_image, stave_info = normalization(normalized_image, stave_info, 10)  # 정규화
+        normalized_images.append((normalized_image))
+
+        # 마지막 인덱스에 10을 더한 값을 추가
+        stave_info.append(stave_info[-1] + 10)
+
+        # 원래 리스트에 중간 값을 추가한 리스트 생성
+        new_stave_info = [stave_info[0]]
+
+        for i in range(len(stave_info) - 1):
+            mid_value = (stave_info[i] + stave_info[i + 1]) / 2
+            new_stave_info.extend([mid_value, stave_info[i + 1]])
+
+        stave_list.append(new_stave_info)  # 도 레 미 파 솔 라 시 도
+
+    return normalized_images, stave_list
