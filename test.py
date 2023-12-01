@@ -30,7 +30,7 @@ sorted_stats = sorted(stats[1:], key=lambda x: x[0])
 
 # 모든 객체를 반복하며 (배경 제외)
 for i in range(1, cnt):
-    (x, y, w, h, area) = sorted_stats[i - 1]  # 인덱스에 주의하여 수정
+    (x, y, w, h, area) = sorted_stats[i - 1]
 
     # 작은 객체는 무시합니다 (필요에 따라 최소 크기 임계값을 조정하세요)
     if w < fs.weighted(5) or h < fs.weighted(5):
