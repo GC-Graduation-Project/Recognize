@@ -70,11 +70,6 @@ def camera_remove_noise(image):
     for subimage_coords in subimages:
         x, y, w, h = subimage_coords
         subimage_1 = masked_image[y:y + h-2, x:x + w + 10]  # 분할 좌표를 찾아 이미지화 margin을 10px 줬음 안그러면 템플릿 매칭때 오류 발생.
-        # 이미지 띄우기
-        cv2.imshow('result_subimage', subimage_1)
-        k = cv2.waitKey(0)
-        if k == 27:
-            cv2.destroyAllWindows()
         height, width = subimage_1.shape
         staves = []  # 오선의 좌표들이 저장될 리스트
 
@@ -82,7 +77,7 @@ def camera_remove_noise(image):
             pixels = 0
             for col in range(width):
                 pixels += (subimage_1[row][col] == 255)  # 한 행에 존재하는 흰색 픽셀의 개수를 셈
-            if pixels >= width * 0.4:  # 이미지 넓이의 50% 이상이라면
+            if pixels >= width * 0.5:  # 이미지 넓이의 50% 이상이라면
                 if len(staves) == 0 or abs(staves[-1][0] + staves[-1][1] - row) > 1:  # 첫 오선이거나 이전에 검출된 오선과 다른 오선
                     staves.append([row, 0])  # 오선 추가 [오선의 y 좌표][오선 높이]
                 else:  # 이전에 검출된 오선과 같은 오선
