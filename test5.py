@@ -7,16 +7,16 @@ import modules
 
 # 이미지를 읽어옵니다.
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path+"music6.jpg")
+src = cv2.imread(resource_path+"music.jpg")
 
 stave_list=[] # 해당 악보의 모든 오선 정보를 담고 있는 리스트
 
 image = modules.deskew(src)
-image_0, subimages = modules.camera_remove_noise(image)
+image_0, subimages = modules.remove_noise(image)
 
 # 오선 제거된 분할 이미지와 오선 정보에 대해 정규화 수행
 normalized_images = []
-print(subimages)
+
 for subimage_coords in subimages:
     x, y, w, h = subimage_coords
     subimage = image_0[y:y+h, x:x+w+10] #분할 좌표를 찾아 이미지화 margin을 10px 줬음 안그러면 템플릿 매칭때 오류 발생.
@@ -43,8 +43,10 @@ for subimage_coords in subimages:
 
 print(stave_list)
 
+image_2 = cv2.bitwise_not(image_0)
+
 # 이미지 띄우기
-cv2.imshow('image', image_0)
+cv2.imshow('image2', image_2)
 k = cv2.waitKey(0)
 if k == 27:
     cv2.destroyAllWindows()
