@@ -23,7 +23,7 @@ AGNOSTIC_NMS = False
 
 # stave_list가 들어올 경우 result_list에서
 
-def detect(image, stave_list):
+def detect():
     source, weights, imgsz = SOURCE, WEIGHTS, IMG_SIZE
     # source=image
     result_list=[] # 인식 결과를 담은 list 생성

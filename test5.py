@@ -7,7 +7,7 @@ import modules
 
 # 이미지를 읽어옵니다.
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path+"music.jpg")
+src = cv2.imread(resource_path+"music4.jpg")
 
 stave_list=[] # 해당 악보의 모든 오선 정보를 담고 있는 리스트
 
@@ -19,14 +19,16 @@ normalized_images = []
 
 for subimage_coords in subimages:
     x, y, w, h = subimage_coords
-    subimage = image_0[y:y+h, x:x+w+10] #분할 좌표를 찾아 이미지화 margin을 10px 줬음 안그러면 템플릿 매칭때 오류 발생.
+    print(subimage_coords)
+    subimage = image_0[y:y+h+5, x:x+w] #분할 좌표를 찾아 이미지화 margin을 10px 줬음 안그러면 템플릿 매칭때 오류 발생.
+
     normalized_image, stave_info = modules.remove_staves(subimage) #오선 제거
+    normalized_image, stave_info = modules.normalization(normalized_image, stave_info, 10) # 정규화
     # 이미지 띄우기
     cv2.imshow('subimage', normalized_image)
     k = cv2.waitKey(0)
     if k == 27:
         cv2.destroyAllWindows()
-    normalized_image, stave_info = modules.normalization(normalized_image, stave_info, 10) # 정규화
     normalized_images.append((normalized_image))
 
     # 마지막 인덱스에 10을 더한 값을 추가
@@ -46,7 +48,7 @@ print(stave_list)
 image_2 = cv2.bitwise_not(image_0)
 
 # 이미지 띄우기
-cv2.imshow('image2', image_2)
+cv2.imshow('image2', image_0)
 k = cv2.waitKey(0)
 if k == 27:
     cv2.destroyAllWindows()
