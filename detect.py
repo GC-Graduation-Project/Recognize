@@ -23,9 +23,9 @@ AGNOSTIC_NMS = False
 
 # stave_list가 들어올 경우 result_list에서
 
-def detect():
+def detect(image):
     source, weights, imgsz = SOURCE, WEIGHTS, IMG_SIZE
-    # source=image
+    source=image
     result_list=[] # 인식 결과를 담은 list 생성
     # Initialize
     device = select_device('cpu') # 일단 CPU defalut로
@@ -49,7 +49,7 @@ def detect():
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
 
     # Load image
-    img0 = cv2.imread(source)  # BGR
+    img0 = image  # BGR
     assert img0 is not None, 'Image Not Found ' + source
 
     # Padded resize
@@ -107,6 +107,8 @@ def detect():
     print(result_list)
     # Stream results
     print(s)
+    cv2.imshow('result', img0)
+    cv2.waitKey(0)  # 1 millisecond
     return result_list
 
 if __name__ == '__main__':
