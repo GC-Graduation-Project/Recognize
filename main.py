@@ -10,10 +10,10 @@ subimages_array = []  # 서브 이미지 배열들을 저장할 리스트
 stave_list=[] # 해당 악보의 모든 오선 정보를 담고 있는 리스트
 # 이미지 불러오기
 resource_path = os.getcwd() + "/resources/"
-image_0 = cv2.imread(resource_path + "music.jpg")
+image_0 = cv2.imread(resource_path + "music6.jpg")
 
 # 1. 보표 영역 추출 및 그 외 노이즈 제거
-image_1,subimages_array = modules.remove_noise(image_0)
+image_1,subimages_array = modules.camera_remove_noise(image_0)
 
 # 2. 오선 제거
 image_2, staves = modules.remove_staves(image_1)
@@ -141,6 +141,7 @@ for result in recognition_list:
     print(result)
 
 print() # 공백추가
+
 
 
 # 각 음표의 높낮이 정보
@@ -318,7 +319,3 @@ print(sen)
 # # 이미지 저장
 # cv2.imwrite(output_path, result_img)
 # print(f"Result image saved at: {output_path}")
-
-[['Treble', 'B4'], ['Quarter Note', 'B4'], ['Quarter Note', 'A4'], ['Quarter Note', 'G4'], ['Quarter Note', 'A4'], ['Quarter Note', 'B4'], ['Quarter Note', 'B4'], ['Half Note', 'B4'], ['Quarter Note', 'A4'], ['Quarter Note', 'A4'], ['Half Note', 'A4'], ['Quarter Note', 'B4'], ['Quarter Note', 'D5'], ['Half Note', 'D5'], ['Quarter Note', 'B4'], ['Quarter Note', 'A4'], ['Quarter Note', 'G4'], ['Quarter Note', 'A4']]
-[['Treble', 'B4'], ['Quarter Note', 'B4'], ['Quarter Note', 'B4'], ['Quarter Note', 'B4'], ['Quarter Note', 'B4'], ['Quarter Note', 'A4'], ['Quarter Note', 'A4'], ['Quarter Note', 'B4'], ['Quarter Note', 'A4'], ['Half Note', 'G4'], ['Quarter Rest', 'B4'], ['Quarter Note', 'A4'], ['Dotted Quarter Note', 'B4'], ['Eight Note', 'A4'], ['Quarter Note', 'G4'], ['Quarter Note', 'A4'], ['Quarter Note', 'B4'], ['Quarter Note', 'B4'], ['Half Note', 'B4']]
-[['Treble', 'B4'], ['Quarter Note', 'A4'], ['Quarter Note', 'A4'], ['Half Note', 'A4'], ['Quarter Note', 'B4'], ['Quarter Note', 'D5'], ['Half Note', 'D5'], ['Dotted Quarter Note', 'B4'], ['Eight Note', 'A4'], ['Quarter Note', 'G4'], ['Quarter Note', 'A4'], ['Quarter Note', 'B4'], ['Quarter Note', 'B4'], ['Quarter Note', 'B4'], ['Quarter Note', 'B4'], ['Quarter Note', 'A4'], ['Quarter Note', 'A4'], ['Quarter Note', 'B4'], ['Quarter Note', 'A4'], ['Whole Note', 'G4']]
