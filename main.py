@@ -143,6 +143,7 @@ for result in recognition_list:
 print() # 공백추가
 
 
+
 # 각 음표의 높낮이 정보
 pitch_list = ['F5', 'E5', 'D5', 'C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4']
 
