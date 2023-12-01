@@ -69,7 +69,7 @@ def remove_noise(image):
 
         if (len(staves) > 5):  # 악보 오선이 5개 이상 (큰 보표면)
             # 이미지를 수평으로 반으로 나누기
-            half_height = height // 2
+            half_height = int((staves[4][0]+staves[5][0])/2)
             subimage_array.append([x, y, w, half_height])  # 위쪽 절반의 좌표
             subimage_array.append([x, y + half_height, w, half_height])  # 아래쪽 절반의 좌표
 
@@ -118,7 +118,7 @@ def camera_remove_noise(image):
 
         if(len(staves)>5) : # 악보 오선이 5개 이상 (큰 보표면)
             # 이미지를 수평으로 반으로 나누기
-            half_height = height // 2
+            half_height = int((staves[4][0]+staves[5][0])/2)
             subimage_array.append([x, y, w, half_height])  # 위쪽 절반의 좌표
             subimage_array.append([x, y + half_height, w, half_height])  # 아래쪽 절반의 좌표
 
