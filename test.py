@@ -16,13 +16,13 @@ normalized_images, stave_list = modules.digital_preprocessing(image_0, subimages
 # 결과를 저장할 디렉토리
 result_dir = 'result'
 os.makedirs(result_dir, exist_ok=True)
-
+recognition_list=[]
 # normalized_images 배열의 각 이미지에 대해 처리를 반복
 for idx, normalized_image in enumerate(normalized_images):
     # 레이블링을 사용한 검출
     closing_image = fs.closing(normalized_image)
     cnt, labels, stats, centroids = cv2.connectedComponentsWithStats(closing_image)  # 모든 객체 검출하기
-
+    temp_list=[]
     # stats 배열을 x 좌표를 기준으로 정렬
     sorted_stats = sorted(stats[1:], key=lambda x: x[0])
 
@@ -61,16 +61,13 @@ for idx, normalized_image in enumerate(normalized_images):
                     note_pillar_count += 1
                 previous_pillar_position = col
 
-        # 현재 객체의 결과를 출력합니다
-        print(f"객체 {i + 1} - 음표 기둥 개수: {note_pillar_count}")
-
         # 객체를 개별 파일로 저장합니다 (기둥 개수에 따라 분리)
         for j in range(note_pillar_count):
             x1 = x + j * (w // note_pillar_count)  # 분리된 객체의 왼쪽 x 좌표
             x2 = x1 + (w // note_pillar_count)  # 분리된 객체의 오른쪽 x 좌표
             object_pillar = object_roi[:, x1 - (x - 2): x2 - (x - 2)]  # 기둥에 해당하는 부분 추출
-            filename = f"{result_dir}/normalized_{idx + 1}_object_{i + 1}_pillar_{j + 1}.png"
-            cv2.imwrite(filename, object_pillar)
+            temp_list.append(object_pillar)
+    recognition_list.append(temp_list)
 
 
 # 음표 기둥 개수가 표시된 최종 결과 이미지를 표시합니다

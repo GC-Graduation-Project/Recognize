@@ -107,8 +107,6 @@ def detect(image):
     print(result_list)
     # Stream results
     print(s)
-    cv2.imshow('result', img0)
-    cv2.waitKey(0)  # 1 millisecond
     return result_list
 
 if __name__ == '__main__':
