@@ -1,28 +1,28 @@
 import cv2
 import os
 import numpy as np
+import detect1
 import functions as fs
 import modules
+from detect1 import detect1
 
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path+"music6.jpg")
+src = cv2.imread(resource_path + "music.jpg")
 
 image = modules.deskew(src)
 image_0, subimages = modules.remove_noise(image)
 
-
 normalized_images, stave_list = modules.digital_preprocessing(image_0, subimages)
 
-# 결과를 저장할 디렉토리
-result_dir = 'result'
-os.makedirs(result_dir, exist_ok=True)
-recognition_list=[]
+recognition_list = []
+
 # normalized_images 배열의 각 이미지에 대해 처리를 반복
 for idx, normalized_image in enumerate(normalized_images):
     # 레이블링을 사용한 검출
     closing_image = fs.closing(normalized_image)
     cnt, labels, stats, centroids = cv2.connectedComponentsWithStats(closing_image)  # 모든 객체 검출하기
-    temp_list=[]
+    temp_list = []
+
     # stats 배열을 x 좌표를 기준으로 정렬
     sorted_stats = sorted(stats[1:], key=lambda x: x[0])
 
@@ -36,7 +36,6 @@ for idx, normalized_image in enumerate(normalized_images):
 
         # 객체의 ROI를 추출합니다
         object_roi = normalized_image[y - 2:y + h + 2, x - 2: x + w + 2]
-
         # 객체의 높이와 너비를 계산합니다
         height, width = object_roi.shape
 
@@ -69,9 +68,16 @@ for idx, normalized_image in enumerate(normalized_images):
             temp_list.append(object_pillar)
     recognition_list.append(temp_list)
 
+input_image = recognition_list[0][8]
+
+input_image = cv2.bitwise_not(input_image)
+
+result = detect1(cv2.cvtColor(input_image, cv2.COLOR_GRAY2BGR))
+
+print(result)
 
 # 음표 기둥 개수가 표시된 최종 결과 이미지를 표시합니다
-cv2.imshow('result_image', normalized_image)
+cv2.imshow('result_image', input_image)
 k = cv2.waitKey(0)
 if k == 27:
     cv2.destroyAllWindows()
