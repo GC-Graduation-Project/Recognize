@@ -7,6 +7,7 @@ from detect import detect
 # 이미지를 읽어옵니다.
 resource_path = os.getcwd() + "/resources/"
 src = cv2.imread(resource_path+"music4.jpg")
+result_list = []
 
 image = modules.deskew(src)
 image_0, subimages = modules.remove_noise(image)
@@ -17,9 +18,19 @@ image_0, subimages = modules.remove_noise(image)
 normalized_images, stave_list = modules.digital_preprocessing(image_0,subimages)
 for img in normalized_images:
     img = cv2.bitwise_not(img)
-    result = detect(cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)) # YOLO모델에는 BGR로 들어가야하기때문에 convert해서 넣어줌.
+    results = detect(cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)) # YOLO모델에는 BGR로 들어가야하기때문에 convert해서 넣어줌.
+    temp_list = []
+    # 각 탐지 결과에서 문자열 부분만 추출하여 result_list에 추가
+    for item in results:
+        note_type = item[1]  # 두 번째 요소 (음표 종류)
+        temp_list.append(note_type)
 
-print(result)
+    result_list.append(temp_list)
+
+
+print(result_list)
+print(len(result_list))
+
 image_2 = cv2.bitwise_not(image_0)
 
 # 이미지 띄우기
