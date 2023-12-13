@@ -3,11 +3,14 @@ import os
 import cv2
 import modules
 from detect import detect
+import functions as fs
 
 # 이미지를 읽어옵니다.
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path+"music4.jpg")
-
+src = cv2.imread(resource_path+"music.jpg")
+original_list = []
+final_result = []
+ind = 0
 image = modules.deskew(src)
 image_0, subimages = modules.remove_noise(image)
 
@@ -18,12 +21,10 @@ normalized_images, stave_list = modules.digital_preprocessing(image_0,subimages)
 for img in normalized_images:
     img = cv2.bitwise_not(img)
     result = detect(cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)) # YOLO모델에는 BGR로 들어가야하기때문에 convert해서 넣어줌.
+    ori_tmp_list, note_tmp_list = fs.mapping_notes(stave_list[ind], result)
+    original_list.append(ori_tmp_list)
+    final_result.append(note_tmp_list)
+    ind+=1
 
-print(result)
-image_2 = cv2.bitwise_not(image_0)
-
-# 이미지 띄우기
-cv2.imshow('image2', normalized_images[6])
-k = cv2.waitKey(0)
-if k == 27:
-    cv2.destroyAllWindows()
+print(original_list)
+print(final_result)

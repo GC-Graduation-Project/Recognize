@@ -16,6 +16,7 @@ normalized_images, stave_list = modules.digital_preprocessing(image_0, subimages
 
 recognition_list = []
 
+
 # normalized_images 배열의 각 이미지에 대해 처리를 반복
 for idx, normalized_image in enumerate(normalized_images):
     # 레이블링을 사용한 검출
@@ -59,7 +60,8 @@ for idx, normalized_image in enumerate(normalized_images):
                 if previous_pillar_position is None or abs(col - previous_pillar_position) >= max_duplicate_distance:
                     note_pillar_count += 1
                 previous_pillar_position = col
-
+        if(note_pillar_count==0):
+            temp_list.append(object_roi)
         # 객체를 개별 파일로 저장합니다 (기둥 개수에 따라 분리)
         for j in range(note_pillar_count):
             x1 = x + j * (w // note_pillar_count)  # 분리된 객체의 왼쪽 x 좌표
@@ -68,7 +70,8 @@ for idx, normalized_image in enumerate(normalized_images):
             temp_list.append(object_pillar)
     recognition_list.append(temp_list)
 
-input_image = recognition_list[0][8]
+
+input_image = recognition_list[0][0]
 
 input_image = cv2.bitwise_not(input_image)
 
