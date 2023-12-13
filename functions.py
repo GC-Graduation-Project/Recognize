@@ -102,6 +102,30 @@ def get_number_upgrade(note):
     }
     return mapping.get(note, "해당 문자열에 대한 숫자가 없습니다.")
 
+
+def mapping_notes(stav, notes):
+    updated_notes = ['F5', 'E5', 'D5', 'C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4']
+    closest_notes_perspective = []
+    notes_list = []
+
+    for note in notes:
+        value, note_type = note[0], note[1]
+        # Find the closest distance in stav to this value in notes
+        closest_distance = min(stav, key=lambda x: abs(x - value))
+        # Find the corresponding note for this closest distance
+        index = stav.index(closest_distance)
+        note = updated_notes[index % len(updated_notes)]
+        closest_notes_perspective.append((value, note_type))
+        notes_list.append(note)
+
+    return closest_notes_perspective, notes_list
+
+
+
+
+
+
+
 def calculate_efficient_positions(notes, mapping):
     """
     Calculate the most efficient positions to play a sequence of notes.

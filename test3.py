@@ -1,43 +1,31 @@
-#기울어진 오선에 대한 보정 camera.py
 import os
-import numpy as np
 import cv2
-import functions as fs
-import modules
+import modules  # 모듈이 있는 파일의 이름에 따라 수정이 필요할 수 있습니다.
 
-# 이미지를 읽어옵니다.
-resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path+"music5.jpg")
+# 현재 디렉토리 설정
+resource_path = os.getcwd() + "/train/images/"
+output_path = os.getcwd() + "/train/processed_images/"
 
-image = modules.deskew(src)
-image_0, subimages = modules.camera_remove_noise(image)
-image_1= fs.camera_threshold(image)
+# 결과 디렉토리가 없으면 생성
+if not os.path.exists(output_path):
+    os.makedirs(output_path)
 
-# 글자나 다른 노이즈를 제거하기위해서 썼는데 잘 안되네
+# 모든 이미지 파일에 대해 처리
+for filename in os.listdir(resource_path):
+    if filename.endswith(".jpg") or filename.endswith(".png"):  # 필요에 따라 확장자를 수정하세요.
+        # 이미지 불러오기
+        image_0 = cv2.imread(os.path.join(resource_path, filename))
 
-# min_area_threshold = image_1.shape[1]*0.5
-# mask = np.zeros(image_1.shape, np.uint8)  # 보표 영역만 추출하기 위해 마스크 생성
-# cnt, labels, stats, centroids = cv2.connectedComponentsWithStats(image_1)  # 레이블링
-# for i in range(1, cnt):
-#     x, y, w, h, area = stats[i]
-#     if w > image_1.shape[1] * 0.5 and area > min_area_threshold:  # 보표 영역에만
-#         cv2.rectangle(mask, (x, y, w, h), (255, 0, 0), -1)  # 사각형 그리기
-#
-# masked_image = cv2.bitwise_and(image_1, mask)  # 보표 영역 추출
-#
-# # 작은 객체를 제거하기 위한 마스크 생성
-# small_objects_mask = np.zeros(image_1.shape, np.uint8)
-#
-# cnt, labels, stats, centroids = cv2.connectedComponentsWithStats(masked_image)  # 레이블링
-# for i in range(1, cnt):
-#     x, y, w, h, area = stats[i]
-#     if h < 12:
-#         cv2.rectangle(small_objects_mask, (x, y, w, h), (255, 0, 0), -1)  # 사각형 그리기
-#
-# masked_image = cv2.bitwise_and(masked_image, small_objects_mask)  # 보표 영역 추출
+        # 1. 보표 영역 추출 및 그 외 노이즈 제거
+        image_1, subimage = modules.remove_noise(image_0)
 
+        # 2. 오선 제거
+        image_2, staves = modules.remove_staves(image_1)
 
-# 결과를 출력합니다.
-cv2.imshow('result', masked_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+        image_2 = cv2.bitwise_not(image_2)
+
+        # 결과 이미지 저장
+        output_filename = os.path.join(output_path, filename)
+        cv2.imwrite(output_filename, image_2)
+
+        print(f"Processed {filename} and saved as {output_filename}")
