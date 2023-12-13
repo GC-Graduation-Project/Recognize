@@ -104,9 +104,10 @@ def detect(image):
 
        # print(f'Inferencing and Processing Done.')
 
-   # print(result_list)
+    print(result_list)
     # Stream results
    # print(s)
+
     return result_list
 
 if __name__ == '__main__':

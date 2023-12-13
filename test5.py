@@ -6,8 +6,8 @@ from detect import detect
 
 # 이미지를 읽어옵니다.
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path+"music4.jpg")
-result_list = []
+src = cv2.imread(resource_path+"test.jpg")
+stav_list = []
 
 image = modules.deskew(src)
 image_0, subimages = modules.remove_noise(image)
@@ -22,19 +22,18 @@ for img in normalized_images:
     temp_list = []
     # 각 탐지 결과에서 문자열 부분만 추출하여 result_list에 추가
     for item in results:
-        note_type = item[1]  # 두 번째 요소 (음표 종류)
+        note_type = item[0]  # 두 번째 요소 (음표 종류)
         temp_list.append(note_type)
 
-    result_list.append(temp_list)
+    stav_list.append(temp_list)
 
 
-print(result_list)
-print(len(result_list))
+print(results)
 
 image_2 = cv2.bitwise_not(image_0)
 
 # 이미지 띄우기
-cv2.imshow('image2', normalized_images[6])
+cv2.imshow('image2', normalized_images[1])
 k = cv2.waitKey(0)
 if k == 27:
     cv2.destroyAllWindows()
