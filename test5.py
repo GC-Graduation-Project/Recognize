@@ -10,6 +10,8 @@ resource_path = os.getcwd() + "/resources/"
 src = cv2.imread(resource_path+"music.jpg")
 original_list = []
 final_result = []
+sentence = []
+temp_dict = {}
 ind = 0
 image = modules.deskew(src)
 image_0, subimages = modules.remove_noise(image)
@@ -24,7 +26,18 @@ for img in normalized_images:
     ori_tmp_list, note_tmp_list = fs.mapping_notes(stave_list[ind], result)
     original_list.append(ori_tmp_list)
     final_result.append(note_tmp_list)
-    ind+=1
+    ind += 1
 
 print(original_list)
 print(final_result)
+for notes in final_result:
+    note_list = notes
+    temp_dict = {}
+    for note in note_list:
+        positions = fs.get_number_upgrade(note)
+        temp_dict[note] = positions
+    ans = fs.calculate_efficient_positions(note_list, temp_dict)
+    sentence.append(ans)
+
+
+print(sentence)

@@ -12,7 +12,7 @@ from utils.torch_utils import select_device
 
 
 SOURCE = 'image2.png'
-WEIGHTS = os.getcwd()  + '/models/' + 'best.pt'
+WEIGHTS = os.getcwd()  + '/models/' + 'best2.pt'
 IMG_SIZE = 640
 DEVICE = ''
 AUGMENT = False
