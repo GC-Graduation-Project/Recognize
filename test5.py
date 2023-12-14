@@ -7,7 +7,7 @@ import functions as fs
 
 # 이미지를 읽어옵니다.
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path+"music.jpg")
+src = cv2.imread(resource_path+"music4.jpg")
 original_list = []
 final_result = []
 sentence = []

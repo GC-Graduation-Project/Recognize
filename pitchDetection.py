@@ -157,7 +157,7 @@ def detect1(image):
   #  print('pred shape:', pred.shape)
 
     # Apply NMS
-    pred = non_max_suppression(pred, CONF_THRES, IOU_THRES, classes=[10], agnostic=AGNOSTIC_NMS)
+    pred = non_max_suppression(pred, CONF_THRES, IOU_THRES, classes=[9,10], agnostic=AGNOSTIC_NMS)
 
     # Process detections
     det = pred[0]

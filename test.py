@@ -60,14 +60,14 @@ for idx, normalized_image in enumerate(normalized_images):
                     note_pillar_count += 1
                 previous_pillar_position = col
         if(note_pillar_count==0):
-            temp_list.append([object_roi, x, (y+h)/2])
+            temp_list.append([ (y+h)/2, object_roi, x])
 
         # 객체를 개별 파일로 저장합니다 (기둥 개수에 따라 분리)
         for j in range(note_pillar_count):
             x1 = x + j * (w // note_pillar_count)  # 분리된 객체의 왼쪽 x 좌표
             x2 = x1 + (w // note_pillar_count)  # 분리된 객체의 오른쪽 x 좌표
             object_pillar = object_roi[:, x1 - (x - 2): x2 - (x - 2)]  # 기둥에 해당하는 부분 추출
-            temp_list.append([object_pillar, x, (y+h)/2])
+            temp_list.append([(y+h)/2, object_pillar, x])
     split_list.append(temp_list)
 
 note_list = []
@@ -79,13 +79,13 @@ for i, temp_list in enumerate(split_list):
     temp=[]
     temp_note = []
     temp_rest = []
-    for j, (object_pillar, x,center_y) in enumerate(temp_list):
+    for j, (center_y, object_pillar, x) in enumerate(temp_list):
         object_pillar= cv2.bitwise_not(object_pillar)
         result = detectBeat(cv2.cvtColor(object_pillar, cv2.COLOR_GRAY2BGR))
         # 결과에 대한 처리 수행 (예: 리스트에 추가)
         if(result==[]):
             continue
-        temp.append([result, x, center_y])
+        temp.append([center_y, result[0], x])
 
     recognition_list.append(temp)
 
@@ -94,9 +94,9 @@ for temp_list in recognition_list:
     temp_note = []
     temp_rest = []
     for item in temp_list:
-        if item and item[0][0].endswith('_note'):
+        if item and item[1].endswith('_note'):
             temp_note.append(item)
-        elif item and item[0][0].endswith('_rest'):
+        elif item and item[1].endswith('_rest'):
             temp_rest.append(item)
     note_list.append(temp_note)
     rest_list.append(temp_rest)
