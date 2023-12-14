@@ -214,17 +214,105 @@ def modify_notes(notes, sharps=0, flats=0):
 
     return notes
 
+def update_notes(top_list, bottom_list, tolerance=3):
+    updated_list = []
+
+    for top_item in top_list:
+        # 하단 리스트에서 x좌표가 ±tolerance 범위 내에 있는 가장 가까운 요소 찾기
+        matching_bottom_item = min(bottom_list, key=lambda x: abs(x[-1] - top_item[-1]), default=None)
+
+        # 일치하는 요소가 있고, 그 차이가 tolerance 이내이면 해당 요소의 가운데 값으로 변경
+        if matching_bottom_item and abs(matching_bottom_item[-1] - top_item[-1]) <= tolerance:
+            note_type = matching_bottom_item[1]
+            # '_dot' 처리
+            if '_dot' in top_item[1]:
+                note_type += '_dot'
+            top_item[1] = note_type
+        else:
+            # 일치하는 요소가 없으면 'None'으로 설정
+            top_item[1] = None
+
+        updated_list.append(top_item)
+
+    return updated_list
+
+def count_sharps_flats(data_list):
+    sharps = 0
+    flats = 0
+
+    for item in data_list:
+        if len(item) >= 2:  # Check if the item has at least two elements
+            if item[1] == 'sharp':
+                sharps += 1
+            elif item[1] == 'flat':
+                flats += 1
+
+    return sharps, flats
+
+def merge_three_lists(list1, list2, list3):
+    merged_list = []
+    tolerance = 3
+
+    # list1의 요소를 먼저 merged_list에 추가
+    for item1 in list1:
+        merged_list.append(item1)
+
+    # list2의 각 요소를 비교하고 병합
+    for item2 in list2:
+        matched = False
+        for i, item1 in enumerate(merged_list):
+            if abs(item1[-1] - item2[-1]) <= tolerance:
+                merged_list[i] = item2
+                matched = True
+                break
+        if not matched:
+            # 일치하는 요소가 없으면 적절한 위치에 삽입
+            insert_index = next((i for i, item in enumerate(merged_list) if item[-1] > item2[-1]), len(merged_list))
+            merged_list.insert(insert_index, item2)
+
+    # x좌표 기준으로 오름차순 정렬
+    merged_list.sort(key=lambda x: x[-1])
+
+    # list3의 요소를 병합된 리스트의 뒤쪽부터 적용
+    list3_index = len(list3) - 1
+    merged_list_index = len(merged_list) - 1
+
+    while list3_index >= 0 and merged_list_index >= 0:
+        if merged_list[merged_list_index][1] is not None and '_rest' in merged_list[merged_list_index][1]:
+            merged_list[merged_list_index][-1] = None
+            merged_list_index -= 1  # '_rest'인 경우 list3_index는 감소시키지 않음
+        else:
+            merged_list[merged_list_index][-1] = list3[list3_index]
+            list3_index -= 1
+            merged_list_index -= 1
+
+    # list3의 길이가 더 짧으면 나머지 부분을 None으로 채움
+    for i in range(merged_list_index, -1, -1):
+        merged_list[i][-1] = None
+
+    # 최종 리스트에서 첫 번째 값을 제거
+    final_list = [item[1:] for item in merged_list]
+
+    return final_list
+
+
+
+
+
+
 def convert_to_sentence(mapped_result_list):
     memorize_index = []
-    sen = ""
+    sen = "\ntabstave notation=true clef="
 
     note_mapping = {
-        'Treble': ('\ntabstave notation=true clef=treble\nnotes', 0),
-        'Quarter Note': (' :q ', 0.25),
-        'Half Note': (' :h ', 0.5),
-        'Dotted Quarter Note': (' :qd ', 0.375),
-        'Eight Note': (' :8 ', 0.125),
-        'Whole Note': (' :w ', 1),
+        'gClef': ('treble', 0),
+        'fClef': ('bass', 0),
+        'four_four': ('time=4/4\n', 0),
+        'quarter_note': (' :q ', 0.25),
+        'half_note': (' :h ', 0.5),
+        'quarter_note_dot': (' :qd ', 0.375),
+        'eight_note': (' :8 ', 0.125),
+        'whole_note': (' :w ', 1),
         'Quarter Rest': (' :4 ##', 0.25)
     }
 

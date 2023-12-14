@@ -216,7 +216,7 @@ def pitch_extraction(stave_list, normalized_images):
         final_result.append(note_tmp_list)
         ind += 1
 
-        return original_list, final_result
+    return original_list, final_result
       
 def beat_extraction(normalized_images):
     split_list = []
@@ -307,4 +307,4 @@ def beat_extraction(normalized_images):
         note_list.append(temp_note)
         rest_list.append(temp_rest)
 
-    return recognition_list,note_list,rest_list
+    return recognition_list, note_list, rest_list

@@ -40,20 +40,6 @@ for clef, notes in zip(clef_list, original_list):
 print(final_result[0])
 print(final_result[1])
 print(final_result[2])
-
-for notes in final_result:
-    note_list = notes
-    temp_dict = {}
-    for note in note_list:
-        positions = fs.get_guitar(note)
-        temp_dict[note] = positions
-    ans = fs.calculate_efficient_positions(note_list, temp_dict)
-    sentence.append(ans)
-
-for notes in final_result:
-    notes = fs.modify_notes(notes, flats=1)
-
-
-print(final_result[0])
-print(final_result[1])
-print(final_result[2])
+print(original_list[0])
+print(original_list[1])
+print(original_list[2])
