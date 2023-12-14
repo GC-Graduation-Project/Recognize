@@ -196,8 +196,3 @@ def detect1(image):
    # print(s)
 
     return result_list
-
-if __name__ == '__main__':
-    check_requirements(exclude=('pycocotools', 'thop'))
-    with torch.no_grad():
-            detect()
