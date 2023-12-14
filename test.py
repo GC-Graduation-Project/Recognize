@@ -1,20 +1,19 @@
 import cv2
 import os
 import numpy as np
-import detect1
 import functions as fs
 import modules
 from detect1 import detect1
 
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path + "music.jpg")
+src = cv2.imread(resource_path + "music15.png")
 
 image = modules.deskew(src)
 image_0, subimages = modules.remove_noise(image)
 
 normalized_images, stave_list = modules.digital_preprocessing(image_0, subimages)
 
-recognition_list = []
+split_list = []
 
 
 # normalized_images 배열의 각 이미지에 대해 처리를 반복
@@ -36,7 +35,7 @@ for idx, normalized_image in enumerate(normalized_images):
             continue
 
         # 객체의 ROI를 추출합니다
-        object_roi = normalized_image[y - 2:y + h + 2, x - 2: x + w + 2]
+        object_roi = normalized_image[y - 2:y + h + 4, x - 2: x + w + 4]
         # 객체의 높이와 너비를 계산합니다
         height, width = object_roi.shape
 
@@ -61,26 +60,33 @@ for idx, normalized_image in enumerate(normalized_images):
                     note_pillar_count += 1
                 previous_pillar_position = col
         if(note_pillar_count==0):
-            temp_list.append(object_roi)
+            temp_list.append([object_roi, x, (y+h)/2])
+
         # 객체를 개별 파일로 저장합니다 (기둥 개수에 따라 분리)
         for j in range(note_pillar_count):
             x1 = x + j * (w // note_pillar_count)  # 분리된 객체의 왼쪽 x 좌표
             x2 = x1 + (w // note_pillar_count)  # 분리된 객체의 오른쪽 x 좌표
             object_pillar = object_roi[:, x1 - (x - 2): x2 - (x - 2)]  # 기둥에 해당하는 부분 추출
-            temp_list.append(object_pillar)
-    recognition_list.append(temp_list)
+            temp_list.append([object_pillar, x, (y+h)/2])
+    split_list.append(temp_list)
 
+note_list = []
+rest_list = []
+recognition_list = []
 
-input_image = recognition_list[0][0]
+# recognition_list에 있는 이미지를 참조하여 디텍트 결과 반환
+for i, temp_list in enumerate(split_list):
+    temp=[]
+    temp_note = []
+    temp_rest = []
+    for j, (object_pillar, x,center_y) in enumerate(temp_list):
+        object_pillar= cv2.bitwise_not(object_pillar)
+        result = detect1(cv2.cvtColor(object_pillar, cv2.COLOR_GRAY2BGR))
+        # 결과에 대한 처리 수행 (예: 리스트에 추가)
+        if(result==[]):
+            continue
+        temp.append([result, x, center_y])
 
-input_image = cv2.bitwise_not(input_image)
+    recognition_list.append(temp)
 
-result = detect1(cv2.cvtColor(input_image, cv2.COLOR_GRAY2BGR))
-
-print(result)
-
-# 음표 기둥 개수가 표시된 최종 결과 이미지를 표시합니다
-cv2.imshow('result_image', input_image)
-k = cv2.waitKey(0)
-if k == 27:
-    cv2.destroyAllWindows()
+print(recognition_list)

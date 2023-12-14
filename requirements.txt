@@ -19,6 +19,7 @@ ultralytics>=8.0.147
 fastapi
 pip install "uvicorn[standard]"
 python-multipart
+pytesseract
 # Logging ---------------------------------------------------------------------
 # tensorboard>=2.4.1
 # clearml>=1.2.0
