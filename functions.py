@@ -30,7 +30,7 @@ def get_number(note):
 
     return mapping.get(note, "해당 문자열에 대한 숫자가 없습니다.")
 
-def get_number_upgrade(note):
+def get_guitar(note):
     mapping = {
         'E4': ['0/1', '5/2', '9/3', '14/4', '19/5'],
         'F4': ['1/1', '6/2', '10/3', '15/4', '20/5'],
@@ -104,24 +104,40 @@ def get_number_upgrade(note):
 
 
 def mapping_notes(stav, notes):
-    updated_notes = ['F5', 'E5', 'D5', 'C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4']
-    closest_notes_perspective = []
+    updated_notes_gclef = ['F5', 'E5', 'D5', 'C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4']
+    updated_notes_fclef = ['F5', 'E5', 'D5', 'C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4']  # 수정 필요
+    updated_notes = []
     notes_list = []
 
     for note in notes:
+
         value, note_type = note[0], note[1]
+        if note[1] == 'gClef':
+            updated_notes = updated_notes_gclef
+            continue
+        elif note[1] == 'fClef':
+            updated_notes = updated_notes_fclef
+            continue
         # Find the closest distance in stav to this value in notes
         closest_distance = min(stav, key=lambda x: abs(x - value))
         # Find the corresponding note for this closest distance
         index = stav.index(closest_distance)
         note = updated_notes[index % len(updated_notes)]
-        closest_notes_perspective.append((value, note_type))
         notes_list.append(note)
 
-    return closest_notes_perspective, notes_list
+    return notes_list
 
 
 
+def add_dot(data):
+    i = 0
+    while i < len(data):
+        if data[i][1] == 'augmentationDot':
+            data[i-1][1] += '_dot'
+            del data[i]
+        else:
+            i += 1
+    return data
 
 
 
