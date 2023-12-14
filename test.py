@@ -3,10 +3,10 @@ import os
 import numpy as np
 import functions as fs
 import modules
-from detect1 import detect1
+from beatDetection import detectBeat
 
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path + "music15.png")
+src = cv2.imread(resource_path + "music.jpg")
 
 image = modules.deskew(src)
 image_0, subimages = modules.remove_noise(image)
@@ -81,7 +81,7 @@ for i, temp_list in enumerate(split_list):
     temp_rest = []
     for j, (object_pillar, x,center_y) in enumerate(temp_list):
         object_pillar= cv2.bitwise_not(object_pillar)
-        result = detect1(cv2.cvtColor(object_pillar, cv2.COLOR_GRAY2BGR))
+        result = detectBeat(cv2.cvtColor(object_pillar, cv2.COLOR_GRAY2BGR))
         # 결과에 대한 처리 수행 (예: 리스트에 추가)
         if(result==[]):
             continue
@@ -89,4 +89,17 @@ for i, temp_list in enumerate(split_list):
 
     recognition_list.append(temp)
 
-print(recognition_list)
+# recognition_list에는 지금 담겨져있는 총 인식 결과를 note따로 rest따로 분리
+for temp_list in recognition_list:
+    temp_note = []
+    temp_rest = []
+    for item in temp_list:
+        if item and item[0][0].endswith('_note'):
+            temp_note.append(item)
+        elif item and item[0][0].endswith('_rest'):
+            temp_rest.append(item)
+    note_list.append(temp_note)
+    rest_list.append(temp_rest)
+
+print(note_list)
+print(rest_list)

@@ -11,19 +11,19 @@ from utils.plots import plot_one_box
 from utils.torch_utils import select_device
 
 
-SOURCE = os.getcwd() + "/result/" + "result/normalized_1_object_3_pillar_1.png"
-WEIGHTS = os.getcwd() + "/models/" + 'best1.pt'
-IMG_SIZE = 64
+SOURCE = 'image2.png'
+WEIGHTS = os.getcwd()  + '/models/' + 'best2.pt'
+IMG_SIZE = 640
 DEVICE = ''
 AUGMENT = False
-CONF_THRES = 0.7
+CONF_THRES = 0.6
 IOU_THRES = 0.45
 CLASSES = None
 AGNOSTIC_NMS = False
 
 # stave_list가 들어올 경우 result_list에서
 
-def detect1(image):
+def detect(image):
     source, weights, imgsz = SOURCE, WEIGHTS, IMG_SIZE
     source=image
     result_list=[] # 인식 결과를 담은 list 생성
@@ -31,7 +31,7 @@ def detect1(image):
     device = select_device('cpu') # 일단 CPU defalut로
     # device = select_device(DEVICE)
     half = device.type != 'cpu'  # half precision only supported on CUDA
-    print('device:', device)
+   # print('device:', device)
 
     # Load model
     model = attempt_load(weights)
@@ -67,14 +67,14 @@ def detect1(image):
 
     # Inference
     pred = model(img, augment=AUGMENT)[0]
-    print('pred shape:', pred.shape)
+  #  print('pred shape:', pred.shape)
 
     # Apply NMS
     pred = non_max_suppression(pred, CONF_THRES, IOU_THRES, classes=CLASSES, agnostic=AGNOSTIC_NMS)
 
     # Process detections
     det = pred[0]
-    print('det shape:', det.shape)
+  #  print('det shape:', det.shape)
 
     s = ''
     s += '%gx%g ' % img.shape[2:]  # print string
@@ -96,18 +96,21 @@ def detect1(image):
             plot_one_box(xyxy, img0, label=label, color=colors[int(cls)], line_thickness=3)
 
             # 추가: bounding box의 중점 좌표와 확률(label 이름 포함) 출력
-            x_center = (xyxy[0] + xyxy[2]) / 2
+            x_center = xyxy[0]
             y_center = (xyxy[1] + xyxy[3]) / 2
             x_center, y_center = round(float(x_center), 2), round(float(y_center), 2)  # 텐서를 숫자로 변환 및 라운딩
-            # print(f'Box Center: ({x_center}, {y_center}), Confidence: {conf:.2f}, Class: {names[int(cls)]}') # 인식 결과를 x 좌표 순서대로 정렬
-            result_list.append(names[int(cls)])
+           # print(f'Box Center: ({x_center}, {y_center}), Confidence: {conf:.2f}, Class: {names[int(cls)]}') # 인식 결과를 x 좌표 순서대로 정렬
+            result_list.append([y_center, names[int(cls)], x_center])
 
-    # print(result_list)
-    # # Stream results
-    # print(s)
+       # print(f'Inferencing and Processing Done.')
+
+    #print(result_list)
+    # Stream results
+   # print(s)
+
     return result_list
 
 if __name__ == '__main__':
     check_requirements(exclude=('pycocotools', 'thop'))
     with torch.no_grad():
-            detect1()
+            detect()

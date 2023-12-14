@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 import cv2
 import numpy as np
 from modules import deskew, remove_noise, digital_preprocessing
-from detect import detect
+from pitchDetection import detect
 
 app = FastAPI()
 @app.get("/")
