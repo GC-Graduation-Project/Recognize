@@ -16,7 +16,7 @@ WEIGHTS = os.getcwd()  + '/models/' + 'best2.pt'
 IMG_SIZE = 640
 DEVICE = ''
 AUGMENT = False
-CONF_THRES = 0.6
+CONF_THRES = 0.5
 IOU_THRES = 0.45
 CLASSES = None
 AGNOSTIC_NMS = False
@@ -99,7 +99,7 @@ def detect(image):
             x_center = xyxy[0]
             y_center = (xyxy[1] + xyxy[3]) / 2
             x_center, y_center = round(float(x_center), 2), round(float(y_center), 2)  # 텐서를 숫자로 변환 및 라운딩
-           # print(f'Box Center: ({x_center}, {y_center}), Confidence: {conf:.2f}, Class: {names[int(cls)]}') # 인식 결과를 x 좌표 순서대로 정렬
+            # print(f'Box Center: ({x_center}, {y_center}), Confidence: {conf:.2f}, Class: {names[int(cls)]}') # 인식 결과를 x 좌표 순서대로 정렬
             result_list.append([y_center, names[int(cls)], x_center])
 
        # print(f'Inferencing and Processing Done.')
