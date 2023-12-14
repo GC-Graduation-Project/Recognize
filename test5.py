@@ -2,7 +2,7 @@
 import os
 import cv2
 import modules
-from pitchDetection import detect
+from pitchDetection import detect, detect1
 import functions as fs
 
 # 이미지를 읽어옵니다.
@@ -20,10 +20,12 @@ image_0, subimages = modules.remove_noise(image)
 # normalized_images : 오선 제거된 분할 이미지와 오선 정보에 대해 정규화된 이미지를 가지고있는 리스트
 
 normalized_images, stave_list = modules.digital_preprocessing(image_0,subimages)
+
 for img in normalized_images:
     img = cv2.bitwise_not(img)
     result = detect(cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)) # YOLO모델에는 BGR로 들어가야하기때문에 convert해서 넣어줌.
-    print(result)
+    result2 = detect1(cv2.cvtColor(img, cv2.COLOR_GRAY2BGR))
+    print(result2)
     ori_tmp_list, note_tmp_list = fs.mapping_notes(stave_list[ind], result)
     original_list.append(ori_tmp_list)
     final_result.append(note_tmp_list)
