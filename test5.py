@@ -7,7 +7,7 @@ import functions as fs
 
 # 이미지를 읽어옵니다.
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path+"music4.jpg")
+src = cv2.imread(resource_path+"music.jpg")
 original_list = []
 final_result = []
 clef_list = []
@@ -37,6 +37,9 @@ for clef, notes in zip(clef_list, original_list):
     final_result.append(note_tmp_list)
     ind += 1
 
+print(final_result[0])
+print(final_result[1])
+print(final_result[2])
 
 for notes in final_result:
     note_list = notes
@@ -47,3 +50,10 @@ for notes in final_result:
     ans = fs.calculate_efficient_positions(note_list, temp_dict)
     sentence.append(ans)
 
+for notes in final_result:
+    notes = fs.modify_notes(notes, flats=1)
+
+
+print(final_result[0])
+print(final_result[1])
+print(final_result[2])

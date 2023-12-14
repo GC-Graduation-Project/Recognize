@@ -192,7 +192,27 @@ def calculate_efficient_positions(notes, mapping):
 
     return best_sequence
 
+def modify_notes(notes, sharps=0, flats=0):
+    # 샵과 플랫에 영향을 받는 음의 순서
+    sharp_order = ['F', 'C', 'G', 'D', 'A', 'E', 'B']
+    flat_order = ['B', 'E', 'A', 'D', 'G', 'C', 'F']
 
+    # 샵이나 플랫에 따라 변경할 음들을 결정
+    sharps_to_modify = sharp_order[:sharps]
+    flats_to_modify = flat_order[:flats]
+
+    # 리스트를 순회하며 음을 변경
+    for i, note in enumerate(notes):
+        note_base = note[0] # 음의 기본 문자
+
+        if note_base in sharps_to_modify:
+            # 샵(#) 추가
+            notes[i] = note_base + '#' + note[1:]
+        elif note_base in flats_to_modify:
+            # 플랫(♭) 추가
+            notes[i] = note_base + '♭' + note[1:]
+
+    return notes
 
 def convert_to_sentence(mapped_result_list):
     memorize_index = []

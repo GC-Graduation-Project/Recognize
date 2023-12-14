@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 import functions as fs
-
+from pitchDetection import detect, detect1
 
 def deskew(image): # 이미지 보정 함수 작성 완료.
     src=image.copy()
@@ -244,3 +244,26 @@ def digital_preprocessing(image, subimage_array):
         stave_list.append(new_stave_info)  # 도 레 미 파 솔 라 시 도
 
     return normalized_images, stave_list
+
+
+def pitch_extraction(stave_list, normalized_images):
+    original_list = []
+    final_result = []
+    clef_list = []
+    ind = 0
+
+    for img in normalized_images:
+        img = cv2.bitwise_not(img)
+        result = detect(cv2.cvtColor(img, cv2.COLOR_GRAY2BGR))  # YOLO모델에는 BGR로 들어가야하기때문에 convert해서 넣어줌.
+        result2 = detect1(cv2.cvtColor(img, cv2.COLOR_GRAY2BGR))
+        clef_list.append(result2)
+        original_list.append(result)
+
+    for clef, notes in zip(clef_list, original_list):
+        notes.insert(0, clef[0])
+        notes = fs.add_dot(notes)
+        note_tmp_list = fs.mapping_notes(stave_list[ind], notes)
+        final_result.append(note_tmp_list)
+        ind += 1
+
+        return original_list, final_result
