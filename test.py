@@ -33,3 +33,6 @@ for list1, list2, list3 in zip(rec_list, note_list2, pitch_list):
 
 print(final_list)
 
+sen = fs.convert_to_sentence(final_list)
+
+print(sen)

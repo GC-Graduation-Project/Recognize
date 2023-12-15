@@ -295,40 +295,61 @@ def merge_three_lists(list1, list2, list3):
 
     return final_list
 
-
-
-
-
-
 def convert_to_sentence(mapped_result_list):
-    memorize_index = []
-    sen = "\ntabstave notation=true clef="
+    complete_sentence = ""
 
     note_mapping = {
         'gClef': ('treble', 0),
         'fClef': ('bass', 0),
-        'four_four': ('time=4/4\n', 0),
+        'four_four': ('time=4/4\nnotes', 0),
         'quarter_note': (' :q ', 0.25),
         'half_note': (' :h ', 0.5),
         'quarter_note_dot': (' :qd ', 0.375),
         'eight_note': (' :8 ', 0.125),
         'whole_note': (' :w ', 1),
-        'Quarter Rest': (' :4 ##', 0.25)
+        'quarter_rest': (' :4 ##', 0.25),
+        'sharp': (' #', 0)  # Adding sharp handling
     }
 
     for result in mapped_result_list:
-        k = 0  # 각 result 리스트마다 k 값을 초기화
-        for i in range(len(result)):
-            action, value = note_mapping.get(result[i][0], ('', 0))
-            if k == 1:
-                memorize_index.append([i])
+        sen = "\ntabstave notation=true clef="  # Start a new tabstave for each list
+        current_time = 0  # Initialize current time for each line
+        sharp_count = 0  # Initialize sharp count for each line
+        four_four_found = False
+        gclef_found = False
+
+        for i, item in enumerate(result):
+            action, value = note_mapping.get(item[0], ('', 0))
+
+            if item[0] == 'sharp':
+                sharp_count += 1
+                continue  # Skip adding sharp symbol to the sentence
+
+            if item[0] == 'gClef':
+                gclef_found = True
+
+            if item[0] == 'four_four':
+                four_four_found = True
+                if sharp_count == 1:
+                    sen += " key=G "  # Add key=G if exactly one sharp
+                    sharp_count = 0  # Reset sharp count after adding key=G
+
+            if current_time + value > 1:  # If the bar length exceeds 1, add a bar line
                 sen += " |"
-                k = 0
+                current_time = 0
 
-            sen += action
-            if result[i][0] not in ['Treble', 'Quarter Rest']:
-                sen += get_number(result[i][1])
-            k += value
+            if action:  # Add the action to the sentence
+                sen += action
+                if item[0] not in ['gClef', 'fClef', 'four_four', 'quarter_rest']:
+                    sen += get_number(item[1])  # Add note detail if applicable
 
-    sen += " =|="
-    return sen
+            current_time += value
+
+        # Check for gClef without four_four
+        if gclef_found and not four_four_found and sharp_count == 1:
+            sen = sen.replace('clef=treble', 'clef=treble key=G\nnotes')
+
+        sen += " =|="
+        complete_sentence += sen
+
+    return complete_sentence
