@@ -32,10 +32,10 @@ def get_number(note):
 
 def get_guitar(note):
     mapping = {
-        'E4': ['0/1', '5/2', '9/3', '14/4', '19/5'],
-        'F4': ['1/1', '6/2', '10/3', '15/4', '20/5'],
-        'F#4': ['2/1', '7/2', '11/3', '16/4', '21/5'],
-        'G♭4': ['2/1', '7/2', '11/3', '16/4', '21/5'],
+        'E4': ['0/1', '5/2', '9/3'],
+        'F4': ['1/1', '6/2', '10/3'],
+        'F#4': ['2/1', '7/2', '11/3'],
+        'G♭4': ['2/1', '7/2', '11/3'],
         'G4': ['3/1', '8/2', '12/3', '17/4', '22/5'],
         'G#4': ['4/1', '9/2', '13/3', '18/4'],
         'A♭4': ['4/1', '9/2', '13/3', '18/4'],
@@ -104,7 +104,7 @@ def get_guitar(note):
 
 
 def mapping_notes(stav, notes):
-    updated_notes_gclef = ['F5', 'E5', 'D5', 'C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4']
+    updated_notes_gclef = ['F4', 'E4', 'D4', 'C4', 'B3', 'A3', 'G3', 'F3', 'E3', 'D3', 'C3']
     updated_notes_fclef = ['F5', 'E5', 'D5', 'C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4']  # 수정 필요
     updated_notes = []
     notes_list = []
@@ -341,7 +341,7 @@ def convert_to_sentence(mapped_result_list):
             if action:  # Add the action to the sentence
                 sen += action
                 if item[0] not in ['gClef', 'fClef', 'four_four', 'quarter_rest']:
-                    sen += get_number(item[1])  # Add note detail if applicable
+                    sen += item[1]  # Add note detail if applicable
 
             current_time += value
 
