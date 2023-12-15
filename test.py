@@ -20,10 +20,8 @@ rec_list, note_list, rest_list = md.beat_extraction(normalized_images)
 
 note_list2, pitch_list = md.pitch_extraction(stave_list, normalized_images)
 
-sharps, flats = fs.count_sharps_flats(rec_list[0])
-
-
-for pitches in pitch_list:
+for rec, pitches in zip(rec_list, pitch_list):
+    sharps, flats = fs.count_sharps_flats(rec)
     pitches = fs.modify_notes(pitches, sharps, flats)
 
 for note2, note1 in zip(note_list2, note_list):
