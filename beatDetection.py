@@ -67,14 +67,12 @@ def detectBeat(image):
 
     # Inference
     pred = model(img, augment=AUGMENT)[0]
-    print('pred shape:', pred.shape)
 
     # Apply NMS
     pred = non_max_suppression(pred, CONF_THRES, IOU_THRES, classes=CLASSES, agnostic=AGNOSTIC_NMS)
 
     # Process detections
     det = pred[0]
-    print('det shape:', det.shape)
 
     s = ''
     s += '%gx%g ' % img.shape[2:]  # print string
