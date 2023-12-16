@@ -299,12 +299,13 @@ def convert_to_sentence(mapped_result_list):
     complete_sentence = ""
 
     note_mapping = {
-        'gClef': ('treble', 0),
+        'gClef': ('treble ', 0),
         'fClef': ('bass', 0),
         'four_four': ('time=4/4\nnotes', 0),
         'quarter_note': (' :q ', 0.25),
         'half_note': (' :h ', 0.5),
         'half_note_dot' : (' :hd ', 0.75),
+        'dot_half_note' : (' :hd ', 0.75),
         'dot_half_note_dot': (' :hd ', 0.75),
         'quarter_note_dot': (' :qd ', 0.375),
         'dot_quarter_note_dot': (' :qd ', 0.375),
