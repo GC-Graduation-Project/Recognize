@@ -1,4 +1,6 @@
 # modules.py
+import os
+
 import cv2
 import numpy as np
 import functions as fs
@@ -217,14 +219,11 @@ def pitch_extraction(stave_list, normalized_images, clef_list):
 
 def beat_extraction(normalized_images):
     split_list = []
-
-
     # normalized_images 배열의 각 이미지에 대해 처리를 반복
     for idx, normalized_image in enumerate(normalized_images):
         # 레이블링을 사용한 검출
-        closing_image = fs.closing(normalized_image)
-        cnt, labels, stats, centroids = cv2.connectedComponentsWithStats(closing_image)  # 모든 객체 검출하기
         temp_list = []
+        cnt, labels, stats, centroids = cv2.connectedComponentsWithStats(normalized_image)  # 모든 객체 검출하기
 
         # stats 배열을 x 좌표를 기준으로 정렬
         sorted_stats = sorted(stats[1:], key=lambda x: x[0])
@@ -238,9 +237,11 @@ def beat_extraction(normalized_images):
                 continue
 
             # 객체의 ROI를 추출합니다
-            object_roi = normalized_image[y - 2:y + h + 4, x - 2: x + w + 4]
+            object_roi = normalized_image[y - 3:y + h + 6, x -3: x + w + 10]
             # 객체의 높이와 너비를 계산합니다
             height, width = object_roi.shape
+            if(height<21):
+                continue
 
             # 수직 히스토그램을 저장할 배열을 생성합니다
             histogram = np.zeros((height, width), np.uint8)
@@ -269,8 +270,15 @@ def beat_extraction(normalized_images):
             for j in range(note_pillar_count):
                 x1 = x + j * (w // note_pillar_count)  # 분리된 객체의 왼쪽 x 좌표
                 x2 = x1 + (w // note_pillar_count)  # 분리된 객체의 오른쪽 x 좌표
+                absolute_x1 = x + (j * (w // note_pillar_count))  # 분리된 객체의 왼쪽 x 좌표 (절대적)
+                absolute_x2 = absolute_x1 + (w // note_pillar_count)  # 분리된 객체의 오른쪽 x 좌표 (절대적)
+
                 object_pillar = object_roi[:, x1 - (x - 2): x2 - (x - 2)]  # 기둥에 해당하는 부분 추출
-                temp_list.append([(y+h)/2, object_pillar, x])
+
+                if j == 0:  # 첫 번째 기둥의 경우
+                    temp_list.append([(y + h) / 2, object_pillar, absolute_x1])
+                else:  # 두 번째 이후의 기둥들의 경우
+                    temp_list.append([(y + h) / 2, object_pillar, absolute_x2])
         split_list.append(temp_list)
 
     note_list = []
@@ -288,6 +296,16 @@ def beat_extraction(normalized_images):
             # 결과에 대한 처리 수행 (예: 리스트에 추가)
             if(result==[]):
                 continue
+
+            print(result)
+            # # 이미지 체킹할때 쓰는거
+            # path = os.getcwd()
+            # print(result)
+            # filename = f' {i}.{j}' + result[0] + ' .jpg'
+            # print(filename + 'saved')
+            # output_filename = os.path.join(path, filename)
+            # cv2.imwrite(output_filename, object_pillar)
+
             temp.append([center_y, result[0], x])
 
         recognition_list.append(temp)
