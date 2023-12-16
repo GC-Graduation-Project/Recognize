@@ -236,6 +236,30 @@ def update_notes(top_list, bottom_list, tolerance=3):
 
     return updated_list
 
+def update_notes(top_list, bottom_list, tolerance=15):
+    updated_list = []
+
+    for top_item in top_list:
+        # Find the closest element in the bottom list within ±tolerance range of x-coordinate
+        matching_bottom_item = min(bottom_list, key=lambda x: abs(x[-1] - top_item[-1]), default=None)
+
+        if matching_bottom_item and abs(matching_bottom_item[-1] - top_item[-1]) <= tolerance:
+            note_type = matching_bottom_item[1]
+            if '_dot' in top_item[1]:
+                note_type += '_dot'
+            top_item[1] = note_type
+        else:
+            # Check for 'Half' or 'Whole' in the top list item and update accordingly
+            if 'Half' in top_item[1]:
+                top_item[1] = 'half_note'
+            elif 'Whole' in top_item[1]:
+                top_item[1] = 'whole_note'
+            else:
+                top_item[1] = None
+
+        updated_list.append(top_item)
+    return updated_list
+
 def count_sharps_flats(data_list):
     sharps = 0
     flats = 0
