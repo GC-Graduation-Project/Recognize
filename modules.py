@@ -196,17 +196,14 @@ def digital_preprocessing(image, subimage_array):
 
     return normalized_images, stave_list
 
-def pitch_extraction(stave_list, normalized_images):
+def pitch_extraction(stave_list, normalized_images, clef_list):
     original_list = []
     final_result = []
-    clef_list = []
     ind = 0
 
     for img in normalized_images:
         img = cv2.bitwise_not(img)
         result = detect(cv2.cvtColor(img, cv2.COLOR_GRAY2BGR))  # YOLO모델에는 BGR로 들어가야하기때문에 convert해서 넣어줌.
-        result2 = detect1(cv2.cvtColor(img, cv2.COLOR_GRAY2BGR))
-        clef_list.append(result2)
         original_list.append(result)
 
     for clef, notes in zip(clef_list, original_list):
@@ -217,7 +214,7 @@ def pitch_extraction(stave_list, normalized_images):
         ind += 1
 
     return original_list, final_result
-      
+
 def beat_extraction(normalized_images):
     split_list = []
 
@@ -283,10 +280,10 @@ def beat_extraction(normalized_images):
     # recognition_list에 있는 이미지를 참조하여 디텍트 결과 반환
     for i, temp_list in enumerate(split_list):
         temp=[]
-        temp_note = []
-        temp_rest = []
         for j, (center_y, object_pillar, x) in enumerate(temp_list):
             object_pillar= cv2.bitwise_not(object_pillar)
+            if object_pillar is None:
+                continue
             result = detectBeat(cv2.cvtColor(object_pillar, cv2.COLOR_GRAY2BGR))
             # 결과에 대한 처리 수행 (예: 리스트에 추가)
             if(result==[]):
@@ -306,5 +303,13 @@ def beat_extraction(normalized_images):
                 temp_rest.append(item)
         note_list.append(temp_note)
         rest_list.append(temp_rest)
+
+    # natural 다음에 note가 없으면 제거
+    for sub_list in recognition_list:
+        nature_indices = [i for i, item in enumerate(sub_list) if item[1] == 'nature']
+        for index in reversed(nature_indices):
+            if all('_note' not in item[1] for item in sub_list[index + 1:]):
+                del sub_list[index]
+
 
     return recognition_list, note_list, rest_list

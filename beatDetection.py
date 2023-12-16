@@ -31,7 +31,6 @@ def detectBeat(image):
     device = select_device('cpu') # 일단 CPU defalut로
     # device = select_device(DEVICE)
     half = device.type != 'cpu'  # half precision only supported on CUDA
-    print('device:', device)
 
     # Load model
     model = attempt_load(weights)

@@ -157,7 +157,7 @@ def detect1(image):
   #  print('pred shape:', pred.shape)
 
     # Apply NMS
-    pred = non_max_suppression(pred, CONF_THRES, IOU_THRES, classes=[9, 10], agnostic=AGNOSTIC_NMS)
+    pred = non_max_suppression(pred, 0.4, IOU_THRES, classes=[9, 10], agnostic=AGNOSTIC_NMS)
 
     # Process detections
     det = pred[0]
@@ -176,7 +176,7 @@ def detect1(image):
             s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
         # Write results
-        sorted_det = sorted(det, key=lambda x: (x[0] + x[2]) / 2)  # x 중점을 기준으로 정렬
+        sorted_det = sorted(det, key=lambda y: (y[0] + y[2]) / 2)  # x 중점을 기준으로 정렬
 
         for *xyxy, conf, cls in sorted_det:
             label = f'{names[int(cls)]} {conf:.2f}'
@@ -187,12 +187,14 @@ def detect1(image):
             y_center = (xyxy[1] + xyxy[3]) / 2
             x_center, y_center = round(float(x_center), 2), round(float(y_center), 2)  # 텐서를 숫자로 변환 및 라운딩
            # print(f'Box Center: ({x_center}, {y_center}), Confidence: {conf:.2f}, Class: {names[int(cls)]}') # 인식 결과를 x 좌표 순서대로 정렬
-            result_list.append([y_center, names[int(cls)], x_center])
+            result_list.append([[y_center, names[int(cls)], 0]])
 
        # print(f'Inferencing and Processing Done.')
 
     #print(result_list)
     # Stream results
    # print(s)
+
+    result_list.sort(key=lambda x: x[0]) # Y축 기준 정렬
 
     return result_list

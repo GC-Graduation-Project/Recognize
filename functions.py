@@ -230,7 +230,7 @@ def update_notes(top_list, bottom_list, tolerance=3):
             top_item[1] = note_type
         else:
             # 일치하는 요소가 없으면 'None'으로 설정
-            top_item[1] = None
+            continue
 
         updated_list.append(top_item)
 
@@ -304,6 +304,8 @@ def convert_to_sentence(mapped_result_list):
         'four_four': ('time=4/4\nnotes', 0),
         'quarter_note': (' :q ', 0.25),
         'half_note': (' :h ', 0.5),
+        'half_note_dot' : (' :hd ', 0.75),
+        'dot_half_note_dot': (' :hd ', 0.75),
         'quarter_note_dot': (' :qd ', 0.375),
         'eight_note': (' :8 ', 0.125),
         'whole_note': (' :w ', 1),
@@ -348,7 +350,8 @@ def convert_to_sentence(mapped_result_list):
         # Check for gClef without four_four
         if gclef_found and not four_four_found and sharp_count == 1:
             sen = sen.replace('clef=treble', 'clef=treble key=G\nnotes')
-
+        elif gclef_found and not four_four_found:
+            sen = sen.replace('clef=treble', 'clef=treble \nnotes')
         sen += " =|="
         complete_sentence += sen
 
