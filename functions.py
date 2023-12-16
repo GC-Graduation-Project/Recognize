@@ -229,8 +229,16 @@ def update_notes(top_list, bottom_list, tolerance=3):
                 note_type += '_dot'
             top_item[1] = note_type
         else:
-            # 일치하는 요소가 없으면 'None'으로 설정
-            continue
+            # If top_item[1] is not None, check for 'Half' or 'Whole'
+            if top_item[1] is not None:
+                if 'Half' in top_item[1]:
+                    top_item[1] = 'half_note'
+                elif 'Whole' in top_item[1]:
+                    top_item[1] = 'whole_note'
+                else:
+                    top_item[1] = None
+            else:
+                top_item[1] = None
 
         updated_list.append(top_item)
 

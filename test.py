@@ -5,7 +5,7 @@ import modules as md
 import pitchDetection
 
 resource_path = os.getcwd() + "/resources/"
-src = cv2.imread(resource_path + "music1.jpg")
+src = cv2.imread(resource_path + "music.jpg")
 final_list = []
 
 image = md.deskew(src)
