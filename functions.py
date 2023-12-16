@@ -307,6 +307,7 @@ def convert_to_sentence(mapped_result_list):
         'half_note_dot' : (' :hd ', 0.75),
         'dot_half_note_dot': (' :hd ', 0.75),
         'quarter_note_dot': (' :qd ', 0.375),
+        'dot_quarter_note_dot': (' :qd ', 0.375),
         'eight_note': (' :8 ', 0.125),
         'whole_note': (' :w ', 1),
         'quarter_rest': (' :4 ##', 0.25),
