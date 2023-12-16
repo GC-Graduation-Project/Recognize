@@ -211,6 +211,7 @@ def pitch_extraction(stave_list, normalized_images, clef_list):
     for clef, notes in zip(clef_list, original_list):
         notes.insert(0, clef[0])
         notes = fs.add_dot(notes)
+        notes = fs.remove_notes(notes)
         note_tmp_list = fs.mapping_notes(stave_list[ind], notes)
         final_result.append(note_tmp_list)
         ind += 1
@@ -331,3 +332,5 @@ def beat_extraction(normalized_images):
 
 
     return recognition_list, note_list, rest_list
+
+

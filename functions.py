@@ -358,3 +358,17 @@ def convert_to_sentence(mapped_result_list):
         complete_sentence += sen
 
     return complete_sentence
+
+def remove_notes(lst):
+    # 비슷한 요소들 중 마지막 요소를 제외하고 리스트를 반환
+    to_keep = []
+    n = len(lst)
+    for i in range(n):
+        keep = True
+        for j in range(i + 1, n):
+            if abs(lst[i][-1] - lst[j][-1]) <= 3:
+                keep = False
+                break
+        if keep:
+            to_keep.append(lst[i])
+    return to_keep
