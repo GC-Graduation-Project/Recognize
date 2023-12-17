@@ -214,7 +214,7 @@ def modify_notes(notes, sharps=0, flats=0):
 
     return notes
 
-def update_notes(top_list, bottom_list, tolerance=3):
+def update_notes(top_list, bottom_list, tolerance=15):
     updated_list = []
 
     for top_item in top_list:
@@ -259,7 +259,7 @@ def count_sharps_flats(data_list):
 
 def merge_three_lists(list1, list2, list3):
     merged_list = []
-    tolerance = 3
+    tolerance = 15
 
     # list1의 요소를 먼저 merged_list에 추가
     for item1 in list1:

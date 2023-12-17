@@ -200,6 +200,7 @@ def digital_preprocessing(image, subimage_array):
 
 def pitch_extraction(stave_list, normalized_images, clef_list):
     original_list = []
+    ori2 = []
     final_result = []
     ind = 0
 
@@ -211,12 +212,13 @@ def pitch_extraction(stave_list, normalized_images, clef_list):
     for clef, notes in zip(clef_list, original_list):
         notes.insert(0, clef[0])
         notes = fs.add_dot(notes)
-        notes = fs.remove_notes(notes)
-        note_tmp_list = fs.mapping_notes(stave_list[ind], notes)
+        tmp = fs.remove_notes(notes)
+        note_tmp_list = fs.mapping_notes(stave_list[ind], tmp)
         final_result.append(note_tmp_list)
+        ori2.append(tmp)
         ind += 1
 
-    return original_list, final_result
+    return ori2, final_result
 
 def beat_extraction(normalized_images):
     split_list = []
