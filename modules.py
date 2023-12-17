@@ -334,5 +334,3 @@ def beat_extraction(normalized_images):
 
 
     return recognition_list, note_list, rest_list
-
-

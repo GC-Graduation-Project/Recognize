@@ -3,10 +3,14 @@ import os
 import functions as fs
 import modules as md
 import pitchDetection
+import time
 
 resource_path = os.getcwd() + "/resources/"
 src = cv2.imread(resource_path + "music1.jpg")
 final_list = []
+
+
+start = time.time()
 
 image = md.deskew(src)
 image_0, subimages = md.remove_noise(image)
@@ -48,3 +52,7 @@ print(final_list)
 sen = fs.convert_to_sentence(final_list)
 
 print(sen)
+
+end = time.time()
+
+print(f"{end - start:.5f} sec")
